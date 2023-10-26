@@ -12,13 +12,11 @@ namespace SaveData
         //シングルトン処理
         private static SaveSystem _instance = new SaveSystem();
         public static SaveSystem Instance => _instance;
-        
-        private SaveSystem() { }
+        //インスタンスが生成された時に必ずロードされる
+        private SaveSystem() { Load(); }
         //Assetにデータの保存場所を作る
         public string Path => Application.dataPath + "/data.json";
-        //セーブデータをインスタンスする
-        private SaveClass _saveClass = new SaveClass();
-        public SaveClass SaveClass => _saveClass;
+        public  SaveClass _saveClass { get; private set; }
 
         public void Save()
         {
@@ -39,7 +37,10 @@ namespace SaveData
             //ファイルが見つからない場合の処理
             if (!File.Exists(Path))
             {
-                Debug.Log("ファイルが見つかりません");
+                Debug.Log("初回起動");
+                //セーブファイルを作る
+                _saveClass = new SaveClass();
+                Save();
                 return;
             }
             //ファイルを読み込む
