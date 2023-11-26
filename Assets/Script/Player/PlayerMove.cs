@@ -27,4 +27,22 @@ public class PlayerMove : MonoBehaviour
         dir.y = 0;
         _rb.velocity = dir * _moveSpeed;
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //動く床の子オブジェクトにする
+        if(other.tag == "MoveFloor")
+        {
+            this.gameObject.transform.parent = other.gameObject.transform;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        //床から離れたら親から離れる
+        if(other.tag == "MoveFloor")
+        {
+            this.gameObject.transform.parent = null;
+        }
+    }
 }
