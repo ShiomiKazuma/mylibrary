@@ -43,49 +43,57 @@ public class ConversationTextController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //文字の表示が完了しているならクリック時に次の行を表示する
-        if(IsCompleteDisplayText)
+        if (!_isFinish)
         {
-            //現在の行番号がラストまで行ってない状態でクリックすると、テキストを更新する
-            //if (_currentLine < _scenarios.Length && Input.GetMouseButtonDown(0))
-            //{
-            //    SetNextLine();
-            //}
-            //else
-            //{
-            //    //完了してないなら文字をすべて
-            //    if(Input.GetMouseButtonDown(0))
-            //    {
-            //        _timeUntiDisplay = 0;
-            //    }
-            //}
-
-            //自動でテキストを更新する
-            if(_waitTime > _waitInterval)
+            //文字の表示が完了しているなら次の行を表示する
+            if (IsCompleteDisplayText && _currentLine < _scenarios.Length)
             {
-                _waitInterval += Time.deltaTime;
+                //現在の行番号がラストまで行ってない状態でクリックすると、テキストを更新する
+                //if (_currentLine < _scenarios.Length && Input.GetMouseButtonDown(0))
+                //{
+                //    SetNextLine();
+                //}
+                //else
+                //{
+                //    //完了してないなら文字をすべて
+                //    if(Input.GetMouseButtonDown(0))
+                //    {
+                //        _timeUntiDisplay = 0;
+                //    }
+                //}
+
+                //自動でテキストを更新する
+                if (_waitTime > _waitInterval)
+                {
+                    _waitInterval += Time.deltaTime;
+                }
+                else
+                {
+                    SetNextLine();
+                    _waitInterval = 0;
+                }
+
             }
-            else
+            else if(_currentLine == _scenarios.Length && IsCompleteDisplayText)
             {
-                SetNextLine();
-                _waitInterval = 0;
+                //もし最後まで表示されていたら
+                _uiText.text = "終了";
+                _isFinish = true;
             }
-            
         }
-        //クリックから経過した時間が想定表示時間の何%か確認し、表示文字数を出す
-        int displayCharacterCount = (int)(Mathf.Clamp01((Time.time - _timeElapsed) / _timeUntiDisplay) * _currentText.Length);
+        
 
-        //表示文字数が前回の表示文字数と異なるテキストを更新する
-        if(displayCharacterCount != _lastUpdateCharacter)
+        if(!_isFinish)
         {
-            _uiText.text = _currentText.Substring(0, displayCharacterCount);
-            _lastUpdateCharacter = displayCharacterCount;
-        }
+            //クリックから経過した時間が想定表示時間の何%か確認し、表示文字数を出す
+            int displayCharacterCount = (int)(Mathf.Clamp01((Time.time - _timeElapsed) / _timeUntiDisplay) * _currentText.Length);
 
-        //もし、最後の行を超えていたら終了する。
-        if(_currentLine > _scenarios.Length - 1)
-        {
-            _isFinish = true;
+            //表示文字数が前回の表示文字数と異なるテキストを更新する
+            if (displayCharacterCount != _lastUpdateCharacter)
+            {
+                _uiText.text = _currentText.Substring(0, displayCharacterCount);
+                _lastUpdateCharacter = displayCharacterCount;
+            }
         }
     }
 
