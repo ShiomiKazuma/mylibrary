@@ -26,6 +26,7 @@ public class BjeThrowController : MonoBehaviour
         DrawLine();
     }
 
+    //ラインレンダラーの設定
     void InitLine()
     {
         //ラインオブジェクトをこのオブジェクトの子オブジェクトにする
@@ -47,5 +48,32 @@ public class BjeThrowController : MonoBehaviour
         Vector3 endPos = _pointer.transform.position + _pointer.transform.forward * _distance; //終点
         //終点の高さを調整する
         endPos.y = startPos.y - _dropHeight;
+
+        Vector3 currentPos = startPos;
+
+        for(int i = 0; i < _positionCount; i++)
+        {
+            float amp = ((float)i / (float)(_positionCount - 1));
+            Vector3 b01 = Vector3.Lerp(startPos, centerPos, amp);
+            Vector3 b12 = Vector3.Lerp(centerPos, endPos, amp);
+            Vector3 b012 = Vector3.Lerp(startPos, b12, amp);
+
+            RaycastHit hit;
+            if(Physics.Linecast(currentPos, b012, out hit))
+            {
+                Debug.Log("hit");
+                Vector3 hitPoint = hit.point;
+                for(int j = i; j < _positionCount; j++)
+                {
+                    _lRender.SetPosition(j, hitPoint);
+                }
+                break;
+            }
+            else
+            {
+                _lRender.SetPosition(i, currentPos);
+                currentPos = b012;
+            }
+        }
     }
 }
