@@ -8,6 +8,8 @@ public class ShotBullet : MonoBehaviour
     [SerializeField, Tooltip("弾のPrefab")] GameObject _bulletPrefab;
     /// <summary> 発射位置のオブジェクト </summary>
     [SerializeField, Tooltip("発射位置のオブジェクト")] GameObject _barrelObject;
+    /// <summary> 弾の発射角度 </summary>
+    [SerializeField, Range(0, 90)] float _radius = 45f; 
     /// <summary> 弾を生成する位置情報 </summary>
     Vector3 _instantiatePosition;
     /// <summary> 弾の生成座標の読み取り </summary>
@@ -31,7 +33,10 @@ public class ShotBullet : MonoBehaviour
     void Update()
     {
         //弾の初速度を更新
-        _shootVelocity = _barrelObject.transform.up * _speed;
+        float vz = _speed * Mathf.Cos(_radius * Mathf.Deg2Rad);
+        float vy = _speed * Mathf.Sin(_radius * Mathf.Deg2Rad);
+        _shootVelocity = new Vector3(0, vy, vz);
+       // _shootVelocity = _barrelObject.transform.up * _speed;
 
         //弾の生成座標を更新
         _instantiatePosition = _barrelObject.transform.position;
