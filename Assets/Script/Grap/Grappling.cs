@@ -18,6 +18,8 @@ public class Grappling : MonoBehaviour
     public float _maxGrappleDistance;
     [Header("フックが伸びているアニメーションの時間")]
     public float _grappleDelayTime;
+    [Header("どれだけ最高到達点を高くするか")]
+    public float _overshootYAxis;
     Vector3 _grapplePoint;
 
     [Header("グラップリングのクールタイム")]
@@ -51,6 +53,7 @@ public class Grappling : MonoBehaviour
     {
         if (_grapplingCTTimer > 0) return;
         Isgrappling = true;
+        _pm._freeze = true;
         RaycastHit hit;
         if(Physics.Raycast(_cam.position, _cam.forward, out hit, _maxGrappleDistance, _grappleable))
         {
@@ -69,11 +72,22 @@ public class Grappling : MonoBehaviour
 
     void ExecuteGrapple()
     {
+        _pm._freeze = false;
 
+        Vector3 lowestPoint = new Vector3(transform.position.x, transform.position.y - 1f, transform.position.z);
+
+        float grapplePointRelativeYPos = _grapplePoint.y - lowestPoint.y;
+        float highestPointOnArc = grapplePointRelativeYPos + _overshootYAxis;
+        if (grapplePointRelativeYPos < 0)
+            highestPointOnArc = _overshootYAxis;
+
+        _pm.JumpToPosition(_grapplePoint, highestPointOnArc);
+        Invoke(nameof(StopGrapple), 1f);
     }
 
-    void StopGrapple()
+    public void StopGrapple()
     {
+        _pm._freeze = false;
         Isgrappling = false;
         _grapplingCTTimer = _grapplingCT;
         _lr.enabled = false;
