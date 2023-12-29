@@ -40,7 +40,7 @@ public class PlayerMovementGrappling : MonoBehaviour
     bool exitingSlope;
 
     //ÉJÉÅÉâ
-    //public PlayerCam _cam;
+    public PlayerCam _cam;
     public float _grappleFov = 95f;
 
     public Transform _orientation;
@@ -77,6 +77,8 @@ public class PlayerMovementGrappling : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //å¸Ç´Çê›íË
+        this.transform.rotation = _orientation.rotation;
         //ê⁄ínîªíË
         IsGround = Physics.Raycast(transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f, _layerMask);
         MyInput();
@@ -87,7 +89,7 @@ public class PlayerMovementGrappling : MonoBehaviour
             _rb.drag = _groundDrag;
         else
             _rb.drag = 0;
-        TextStuff();
+        //TextStuff();
     }
 
     void FixedUpdate()
@@ -243,13 +245,13 @@ public class PlayerMovementGrappling : MonoBehaviour
         enableMovementOnNextTouch = true;
         _rb.velocity = velocityToSet;
 
-        //_cam.DoFov(grappleFov);
+        _cam.DoFov(_grappleFov);
     }
 
     public void ResetRestrictions()
     {
         _activeGrapple = false;
-        //_cam.DoFov(85f);
+        _cam.DoFov(85f);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -294,26 +296,26 @@ public class PlayerMovementGrappling : MonoBehaviour
 
     #region Text & Debugging
 
-    public TextMeshProUGUI text_speed;
-    public TextMeshProUGUI text_mode;
-    private void TextStuff()
-    {
-        Vector3 flatVel = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
+    //public TextMeshProUGUI text_speed;
+    //public TextMeshProUGUI text_mode;
+    //private void TextStuff()
+    //{
+    //    Vector3 flatVel = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
 
-        if (OnSlope())
-            text_speed.SetText("Speed: " + Round(_rb.velocity.magnitude, 1) + " / " + Round(_moveSpeed, 1));
+    //    if (OnSlope())
+    //        text_speed.SetText("Speed: " + Round(_rb.velocity.magnitude, 1) + " / " + Round(_moveSpeed, 1));
 
-        else
-            text_speed.SetText("Speed: " + Round(flatVel.magnitude, 1) + " / " + Round(_moveSpeed, 1));
+    //    else
+    //        text_speed.SetText("Speed: " + Round(flatVel.magnitude, 1) + " / " + Round(_moveSpeed, 1));
 
-        text_mode.SetText(_state.ToString());
-    }
+    //    text_mode.SetText(_state.ToString());
+    //}
 
-    public static float Round(float value, int digits)
-    {
-        float mult = Mathf.Pow(10.0f, (float)digits);
-        return Mathf.Round(value * mult) / mult;
-    }
+    //public static float Round(float value, int digits)
+    //{
+    //    float mult = Mathf.Pow(10.0f, (float)digits);
+    //    return Mathf.Round(value * mult) / mult;
+    //}
 
     #endregion
 }
