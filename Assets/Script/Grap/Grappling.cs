@@ -46,12 +46,18 @@ public class Grappling : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(Isgrappling)
-           _lr.SetPosition(0, _cam.position);
+        if (Isgrappling)
+        {
+            Vector3 temp = _cam.position;
+            temp.y = _cam.position.y - 2;
+            _lr.SetPosition(0, temp);
+        }
+
     }
     void StartGrapple()
     {
         if (_grapplingCTTimer > 0) return;
+        //GetComponent<SwingGrap>().StopSwing();
         Isgrappling = true;
         _pm._freeze = true;
         RaycastHit hit;
@@ -92,6 +98,14 @@ public class Grappling : MonoBehaviour
         _grapplingCTTimer = _grapplingCT;
         _lr.enabled = false;
     }
-    
-    
+
+    public bool IsGrappling()
+    {
+        return Isgrappling;
+    }
+
+    public Vector3 GetGrapplePoint()
+    {
+        return _grapplePoint;
+    }
 }
