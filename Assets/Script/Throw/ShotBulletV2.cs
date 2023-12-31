@@ -35,8 +35,9 @@ public class ShotBulletV2 : MonoBehaviour
 
     void Update()
     {
+        //Šp“x‚ğXV
+        CheckRadius();
         //’e‚Ì‰‘¬“x‚ğXV
-
         float vz = _speed * Mathf.Cos(_radius * Mathf.Deg2Rad);
         float vy = _speed * Mathf.Sin(_radius * Mathf.Deg2Rad);
         _shootVelocity = new Vector3(0, vy, vz);
@@ -52,21 +53,38 @@ public class ShotBulletV2 : MonoBehaviour
             GameObject obj = Instantiate(_bulletPrefab, _instantiatePosition, Quaternion.identity);
             Rigidbody rid = obj.GetComponent<Rigidbody>();
             rid.AddForce(_shootVelocity * rid.mass, ForceMode.Impulse);
-
+            
             // 5•bŒã‚ÉÁ‚¦‚é
             Destroy(obj, 5.0F);
         }
     }
 
-    void CheckMaxRadius()
+    void CheckRadius()
     {
         float time; // ‘Ø‹óŠÔ
         //Šp“x45“x‚Ì‚Ì”ò‹——£‚ğ‹‚ß‚é
         time = 2 * _speed * Mathf.Sin(45 * Mathf.Deg2Rad) / 9.8f;
-        float x = _speed * _speed * Mathf.Sin(45 * 2 * Mathf.Deg2Rad) / 9.8f;
-        if(x > _bulletDistance)
+        float distance = _speed * _speed * Mathf.Sin(45 * 2 * Mathf.Deg2Rad) / 9.8f;
+        if(distance <= _bulletDistance)
         {
             _radius = 45f;
+        }
+        else
+        {
+            //’…’e‚Ì‹——£‚©‚çŠp“x‚ğ‹‚ß‚é
+            //_radius = Mathf.Asin((_bulletDistance * 9.8f) / (_speed * _speed) / 2);
+            _radius = 44.9f;
+            bool Is = false;
+            for (float marge = 0.01f; marge <= 1 && Is == false; marge += 0.01f)
+            {
+                for (; Is == false && _radius <= 90; _radius += 0.01f)
+                {
+                    float currentDis = _speed * _speed * Mathf.Sin(_radius * 2 * Mathf.Deg2Rad) / 9.8f;
+                    if (Mathf.Abs(_bulletDistance - currentDis) <= marge)
+                        Is = true;
+                }
+            }
+            Debug.Log(_radius);
         }
     }
 }
