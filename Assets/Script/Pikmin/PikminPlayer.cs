@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PkuminPlayer : MonoBehaviour
+public class PikminPlayer : MonoBehaviour
 {
     [SerializeField] float _speed;
     [SerializeField] float _rotSpeed;
     [SerializeField] float _gravSpeed;
 
-    public List<Pikmin> _groupPikmins;
+    public List<Pikmin> _followingPikmins;
     [SerializeField] GameObject _pikminPrefab;
     [SerializeField] Transform _playerGathPos;
     [SerializeField] Transform _onionPos;
