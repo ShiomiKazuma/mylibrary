@@ -2,21 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// ステートマシン
-/// </summary>
+/// <summary> ステートマシン </summary>
 public class StateMachine<TOwner>
 {
     ///<summary>ステートを表すクラス </summary>
     public abstract class State
     {
         /// <summary>このステートを管理しているステートマシン </summary>
-        protected StateMachine<TOwner> StateMachine => stateMachine;
-        internal StateMachine<TOwner> stateMachine;
+        protected StateMachine<TOwner> StateMachine => _stateMachine;
+        internal StateMachine<TOwner> _stateMachine;
         /// <summary>遷移の一覧 </summary>
         internal Dictionary<int, State> transitions = new Dictionary<int, State>();
         /// <summary>このステートのオーナー</summary>
-        protected TOwner Owner => stateMachine.Owner;
+        protected TOwner Owner => _stateMachine.Owner;
 
         /// <summary>ステート開始</summary>
         internal void Enter(State prevState)
