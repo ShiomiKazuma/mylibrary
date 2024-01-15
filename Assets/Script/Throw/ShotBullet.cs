@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class ShotBullet : MonoBehaviour
@@ -35,8 +36,9 @@ public class ShotBullet : MonoBehaviour
         //弾の初速度を更新
         float vz = _speed * Mathf.Cos(_radius * Mathf.Deg2Rad);
         float vy = _speed * Mathf.Sin(_radius * Mathf.Deg2Rad);
-        _shootVelocity = new Vector3(0, vy, vz);
-       // _shootVelocity = _barrelObject.transform.up * _speed;
+        _shootVelocity = transform.TransformDirection(new Vector3(0, vy, vz));
+        //_shootVelocity = new Vector3(0, vy, vz);
+        // _shootVelocity = _barrelObject.transform.up * _speed;
 
         //弾の生成座標を更新
         _instantiatePosition = _barrelObject.transform.position;
