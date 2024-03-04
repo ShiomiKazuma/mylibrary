@@ -17,6 +17,17 @@ public class MyTestEditorWindow : EditorWindow
     private void OnGUI()
     {
         //実際のウィンドウのコードはここに書く
+        if(GUILayout.Button("Make Sphere"))
+        {
+            CreateSphere();
+        }
+    }
 
+    /// <summary>
+    /// サークルを生成する
+    /// </summary>
+    private void CreateSphere()
+    {
+        GameObject circle = GameObject.CreatePrimitive(PrimitiveType.Sphere);
     }
 }
