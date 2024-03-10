@@ -8,8 +8,7 @@ public class RaderMap : MonoBehaviour
     /// <summary>
     /// 敵のリスト
     /// </summary>
-    List<AgentScript> _enemys = new List<AgentScript> ();
-    [SerializeField, Tooltip("敵")] Transform _enemy;
+    List<AgentScript> _enemys = new List<AgentScript>();
     [SerializeField, Tooltip("プレイヤーの位置")] Transform _player;
     [SerializeField, Tooltip("UIの真ん中")] Image _center;
     [SerializeField] Image _target;
@@ -17,15 +16,22 @@ public class RaderMap : MonoBehaviour
     [SerializeField, Tooltip("レーダーの大きさ")] float _raderLength = 30f;
     [SerializeField, Tooltip("半径")] float _radius = 6f;
     Transform[] _points;
-    List<RectTransform> _targetsDot = new List<RectTransform> ();
+    List<RectTransform> _targetsDot = new List<RectTransform>();
     RectTransform _rectTransform;
+    /// <summary>
+    /// Centerからのオフセット
+    /// </summary>
     Vector2 _offset;
+    /// <summary>
+    /// 一番近い敵のゲームオブジェクト
+    /// </summary>
+    GameObject _nearEnemy;
     // Start is called before the first frame update
     void Start()
     {
         //敵をすべて取得する
         GameObject[] objects = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach(GameObject obj in objects)
+        foreach (GameObject obj in objects)
         {
             AgentScript agent = obj.GetComponent<AgentScript>();
             agent.RaderMap = this;
@@ -41,7 +47,7 @@ public class RaderMap : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        for(int i = 0; i < _enemys.Count; i++)
+        for (int i = 0; i < _enemys.Count; i++)
         {
             //Imageがなければ生成
             if (!_enemys[i].Image)
@@ -58,6 +64,8 @@ public class RaderMap : MonoBehaviour
             //赤点の位置を決める
             _enemys[i].Image.anchoredPosition = new Vector2(enemyDir.x * _radius + _offset.x, enemyDir.z * _radius + _offset.y);
         }
+
+
         //Vector3 enemyDir = _enemy.position;
         ////敵の高さとプレイヤーの高さを合わせる
         //enemyDir.y = _player.position.y;
@@ -67,5 +75,27 @@ public class RaderMap : MonoBehaviour
         //enemyDir = Vector3.ClampMagnitude(enemyDir, _raderLength);
 
         //_rectTransform.anchoredPosition = new Vector2(enemyDir.x * _radius + _offset.x, enemyDir.z * _radius + _offset.y);
+    }
+
+    /// <summary>
+    /// プレイヤーから１番近い敵のゲームオブジェクトを返すメソッド
+    /// </summary>
+    /// <returns></returns>
+    public GameObject NearEnemy()
+    {
+        float nearDistance = float.MaxValue;
+
+        //エネミーとの距離を判定する
+        for (int i = 0; i < _enemys.Count; i++)
+        {
+            float distance = Vector3.Distance(_enemys[i].transform.position, _player.transform.position);
+            if (distance < nearDistance)
+            {
+                nearDistance = distance;
+                _nearEnemy = _enemys[i].gameObject;
+            }
+        }
+
+        return _nearEnemy;
     }
 }
