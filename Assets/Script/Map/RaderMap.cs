@@ -8,24 +8,22 @@ public class RaderMap : MonoBehaviour
     /// <summary>
     /// 敵のリスト
     /// </summary>
-    List<AgentScript> _enemys = new List<AgentScript>();
-    [SerializeField, Tooltip("プレイヤーの位置")] Transform _player;
-    [SerializeField, Tooltip("UIの真ん中")] Image _center;
-    [SerializeField] Image _target;
-    [SerializeField, Tooltip("敵をまとめる親オブジェクト")] GameObject _dest;
-    [SerializeField, Tooltip("レーダーの大きさ")] float _raderLength = 30f;
-    [SerializeField, Tooltip("半径")] float _radius = 6f;
-    Transform[] _points;
-    List<RectTransform> _targetsDot = new List<RectTransform>();
-    RectTransform _rectTransform;
+    private List<AgentScript> _enemys = new List<AgentScript>();
+    [SerializeField, Tooltip("プレイヤーの位置")] private Transform _player;
+    [SerializeField, Tooltip("UIの真ん中")] private Image _center;
+    [SerializeField, Tooltip("マップで使う敵のUI")] private Image _target;
+    [SerializeField, Tooltip("敵をまとめる親オブジェクト")] private GameObject _dest;
+    [SerializeField, Tooltip("レーダーの大きさ")] private float _raderLength = 30f;
+    [SerializeField, Tooltip("半径")] private float _radius = 6f;
     /// <summary>
     /// Centerからのオフセット
     /// </summary>
-    Vector2 _offset;
+    private Vector2 _offset;
     /// <summary>
     /// 一番近い敵のゲームオブジェクト
     /// </summary>
-    GameObject _nearEnemy;
+    private GameObject _nearEnemy;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,7 +39,6 @@ public class RaderMap : MonoBehaviour
 
         //_rectTransform = _target.GetComponent<RectTransform>();
         _offset = _center.GetComponent<RectTransform>().anchoredPosition;
-        _points = _dest.GetComponentsInChildren<Transform>();
     }
 
     // Update is called once per frame
