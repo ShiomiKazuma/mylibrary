@@ -20,9 +20,6 @@ public class PlayerLockon : MonoBehaviour
     bool IslockonInput = false;
     public bool IsLockon = false;
 
-    Camera mainCamera;
-    Transform cameraTrn;
-    GameObject targetObj;
 
     Camera _mainCamera;
     Transform _cameraTrn;
@@ -32,8 +29,8 @@ public class PlayerLockon : MonoBehaviour
     void Start()
     {
         //変数の初期化（メインカメラの値を変数に代入）
-        mainCamera = Camera.main;
-        cameraTrn = mainCamera.transform;
+        _mainCamera = Camera.main;
+        _cameraTrn = _mainCamera.transform;
     }
 
     // Update is called once per frame
@@ -125,5 +122,49 @@ public class PlayerLockon : MonoBehaviour
             }
         }
         return hitObjects;
+    }
+
+    /// <summary>
+    /// リスト全てのベクトルとカメラのベクトルを比較して、画面中央に一番近いものを探す
+    /// </summary>
+    /// <param name="hitObjects"></param>
+    /// <returns></returns>
+    (float, GameObject) GetOptimalEnemy(List<GameObject> hitObjects)
+    {
+        float degreep = Mathf.Atan2(_cameraTrn.forward.x, _cameraTrn.forward.z);
+        float degreemum = Mathf.PI * 2;
+        GameObject target = null;
+
+        foreach(var enemy in hitObjects)
+        {
+            // pos: 敵からカメラへ向けたベクトル
+            // pos2: カメラから敵に向けたベクトル(水平方向に制限して正規化)
+            Vector3 pos = _cameraTrn.position - enemy.transform.position;
+            Vector3 pos2 = enemy.transform.position - _cameraTrn.position;
+            pos2.y = 0f;
+            pos2.Normalize();
+
+            // degree: pos2のX,Z成分からなる角度. カメラの前方からどれだけ回転しているか
+            float degree = Mathf.Atan2(pos2.x, pos2.z);
+            // degreeを-180°～180°に正規化
+            degree = degreeNormalize(degree, degreep);
+
+            // pos.magnitude: 敵とカメラの距離
+            // pos.magnitudeに応じて角度に重みをかけ、距離が近いほど角度の重みが大きく選好される
+            degree = degree + degree * (pos.magnitude / 500) * _lockonFactor;
+            // Mathf.Abs(degreemum): 以前に記録された最小角度差の絶対値
+            // Mathf.Abs(degree): 現在の角度差の絶対値
+            if (Mathf.Abs(degreemum) >= Mathf.Abs(degree))
+            {
+                degreemum = degree;
+                target = enemy;
+            }
+        }
+        return (degreemum, target);
+    }
+
+    float degreeNormalize(float degree, float degreep)
+    {
+
     }
 }
