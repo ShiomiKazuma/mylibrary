@@ -15,6 +15,14 @@ public class PlayerLockonCamera : MonoBehaviour
     int _lockonCameraInactivePriority = 0;
 
     /// <summary>
+    /// カメラの角度をプレイヤーを基準にリセット
+    /// </summary>
+    public void ResetFreeLookCamera()
+    {
+        
+    }
+
+    /// <summary>
     /// ロックオン時のVirtualCamera切り替えのメソッド
     /// </summary>
     /// <param name="target">ロックオンするオブジェクト</param>

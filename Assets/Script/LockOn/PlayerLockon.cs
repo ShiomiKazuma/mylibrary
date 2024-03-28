@@ -49,9 +49,38 @@ public class PlayerLockon : MonoBehaviour
                 _targetObj = null;
                 return;
             }
-        }
 
-        // ロックオン対象の検索、いるならロックオン、いないならカメラ角度をリセット
+            // ロックオン対象の検索、いるならロックオン、いないならカメラ角度をリセット
+            _targetObj = GetLockonTarget();
+            if (_targetObj)
+            {
+                IsLockon = true;
+                _playerCamera.ActiveLockonCamera(_targetObj);
+                _lockonCursor.SetActive(true);
+            }
+            else
+            {
+                _playerCamera.ResetFreeLookCamera();
+            }
+
+            IslockonInput = false;
+        }   
+
+        //ロックオンカーソル
+        if(IsLockon)
+        {
+            _lockonCursor.transform.position = _mainCamera.WorldToScreenPoint(_targetObj.transform.position);
+            float lookAtDistance = Vector3.Distance(_playerCamera.GetLookAtTransform().position, _originTransform.position);
+            if(lookAtDistance > _lockonRange)
+            {
+                IsLockon = false;
+                _lockonCursor.SetActive(false);
+                IslockonInput = false;
+                _playerCamera.InactiveLockonCamera();
+                _targetObj = null;
+                return;
+            }
+        }
     }
 
     /// <summary>
@@ -77,7 +106,7 @@ public class PlayerLockon : MonoBehaviour
     /// ロックオン対象の計算処理を行い取得する
     /// </summary>
     /// <returns>ロックオンしたオブジェクト</returns>
-    GameObject GetLockontarget()
+    GameObject GetLockonTarget()
     {
         //SpereCastAllを使ってPlayer周辺のEnemyを取得しListに格納
         RaycastHit[] hits = Physics.SphereCastAll(_originTransform.position, _lockonRange, Vector3.up, 0, _lockonLayer);
@@ -97,8 +126,16 @@ public class PlayerLockon : MonoBehaviour
         }
 
         //hitObjectsのリスト全てのベクトルとカメラのベクトルを比較し、画面中央に一番近いものを探す
-        var tumpledData = 
+        var tumpledData = GetOptimalEnemy(hitObjects);
+        float degreemum = tumpledData.Item1;
+        GameObject target = tumpledData.Item2;
 
+        //求めた一番小さい値が一定値より小さい場合、ターゲッティングをオンにします
+        if (Mathf.Abs(degreemum) <= _lockonThreshold)
+        {
+            return target;
+        }
+        return null;
     }
 
     /// <summary>
@@ -163,8 +200,31 @@ public class PlayerLockon : MonoBehaviour
         return (degreemum, target);
     }
 
+    /// <summary>
+    /// degreeを-180°～180°に正規化
+    /// </summary>
+    /// <param name="degree"></param>
+    /// <param name="degreep"></param>
+    /// <returns></returns>
     float degreeNormalize(float degree, float degreep)
     {
-
+        if(Mathf.PI <= (degreep - degree))
+        {
+            // degreep (カメラの前方ベクトル) とdegree (カメラから敵へのベクトル) との角度差が180°以上
+            // degreeから360°引いて正規化(-180から180に制限)
+            degree = degreep - degree - Mathf.PI * 2;
+        }
+        else if(-Mathf.PI >= (degreep - degree))
+        {
+            // degreep (カメラの前方ベクトル) とdegree (カメラから敵へのベクトル) との角度差が-180°以下
+            // degreeから360°足して正規化(-180から180に制限)
+            degree = degreep - degree + Mathf.PI * 2;
+        }
+        else
+        {
+            //そのままdgreeを私用
+            degree = degreep - degree;
+        }
+        return degree;
     }
 }
