@@ -7,6 +7,8 @@ public class Boid : MonoBehaviour
     public Boidparam Boidparam;
     public Vector3 Pos { get; private set; }
     public Vector3 Velocity { get; private set; }
+    Vector3 _accel = Vector3.zero;
+    List<Boid> _neighbors = new List<Boid>();
     // Start is called before the first frame update
     void Start()
     {
@@ -63,6 +65,15 @@ public class Boid : MonoBehaviour
 
     void UpdateMove()
     {
+        var deltatime = Time.deltaTime;
+        Velocity += _accel * deltatime;
+        var dir = Velocity.normalized;
+        var speed = Velocity.magnitude;
+        Velocity = Mathf.Clamp(speed, Boidparam.MinSpeed, Boidparam.MaxSpeed) * dir;
+        Pos += Velocity * deltatime;
 
+        var rot = Quaternion.LookRotation(Velocity);
+        transform.SetPositionAndRotation(Pos, rot);
+        _accel = Vector3.zero;
     }
 }
