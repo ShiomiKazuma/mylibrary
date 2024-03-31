@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Boid : MonoBehaviour
 {
+    public BoidSimulation _simulation;
     public Boidparam Boidparam;
     public Vector3 Pos { get; private set; }
     public Vector3 Velocity { get; private set; }
