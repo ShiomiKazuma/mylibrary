@@ -44,9 +44,32 @@ public class Boid : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 壁から受ける力を計算する
+    /// </summary>
     void UpdateWalls()
     {
+        if (!_simulation)
+            return;
 
+        var scale = Boidparam.WallScale * 0.5f;
+        _accel += 
+            CalcAccelAgainstWall(-scale - Pos.x, Vector3.right) +
+            CalcAccelAgainstWall(-scale - Pos.y, Vector3.up) +
+            CalcAccelAgainstWall(-scale - Pos.z, Vector3.forward) +
+            CalcAccelAgainstWall(scale - Pos.x, Vector3.left) +
+            CalcAccelAgainstWall(scale - Pos.y, Vector3.down) +
+            CalcAccelAgainstWall(scale - Pos.z, Vector3.back);
+    }
+
+    Vector3 CalcAccelAgainstWall(float distance, Vector3 dir)
+    {
+        if(distance < Boidparam.WallDistance)
+        {
+            return dir * (Boidparam.WallDistance / Mathf.Abs(distance / Boidparam.WallDistance));
+        }
+
+        return Vector3.zero;
     }
 
     void UpdateSeparation()
@@ -64,6 +87,9 @@ public class Boid : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 移動処理
+    /// </summary>
     void UpdateMove()
     {
         var deltatime = Time.deltaTime;
