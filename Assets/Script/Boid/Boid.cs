@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Boid : MonoBehaviour
 {
-    public BoidSimulation _simulation;
+    public BoidSimulation Simulation;
     public Boidparam Boidparam;
     public Vector3 Pos { get; private set; }
     public Vector3 Velocity { get; private set; }
@@ -39,9 +39,37 @@ public class Boid : MonoBehaviour
         UpdateMove();
     }
 
+    /// <summary>
+    /// 近隣の個体の情報を取得する
+    /// </summary>
     void UpdateNeighbors()
     {
+        _neighbors.Clear();
 
+        if (Simulation)
+            return;
+
+        var prodThresh = Mathf.Cos(Boidparam.NeighborFov * Mathf.Deg2Rad);
+        var distThresh = Boidparam.NeighborDistance;
+
+        foreach(var other in Simulation.BoidList)
+        {
+            if (other == this)
+                continue;
+
+            var to = other.Pos - Pos;
+            var dist = to.magnitude;
+            if(dist < distThresh)
+            {
+                var dir = to.normalized;
+                var fwd = Velocity.normalized;
+                var prod = Vector3.Dot(fwd, dir);
+                if(prod > prodThresh)
+                {
+                    _neighbors.Add(other);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -49,7 +77,7 @@ public class Boid : MonoBehaviour
     /// </summary>
     void UpdateWalls()
     {
-        if (!_simulation)
+        if (!Simulation)
             return;
 
         var scale = Boidparam.WallScale * 0.5f;
@@ -72,9 +100,21 @@ public class Boid : MonoBehaviour
         return Vector3.zero;
     }
 
+    /// <summary>
+    /// 群衆の分離処理
+    /// </summary>
     void UpdateSeparation()
     {
+        if (_neighbors.Count == 0)
+            return;
 
+        Vector3 force = Vector3.zero;
+        foreach(var neighbor in _neighbors)
+        {
+            force += (Pos - neighbor.Pos).normalized;
+        }
+        force /= _neighbors.Count;
+        _accel += force * Boidparam.SeparationWeight;
     }
 
     void UpdateAlignment()

@@ -23,7 +23,7 @@ public class BoidSimulation : MonoBehaviour
         var go = Instantiate(_boidPrefab, Random.insideUnitSphere, Random.rotation);
         go.transform.SetParent(transform);
         var boid = go.GetComponent<Boid>();
-        boid._simulation = this;
+        boid.Simulation = this;
         boid.Boidparam = _boidParam;
         _boidList.Add(boid);
     }
