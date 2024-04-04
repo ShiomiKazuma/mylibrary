@@ -105,10 +105,17 @@ public class Boid : MonoBehaviour
     /// </summary>
     void UpdateSeparation()
     {
-        _neighbors.Clear();
-        if (!Simulation)
+        if (_neighbors.Count == 0)
             return;
-        var prodThresh = Mathf.Cos(Boidparam.NeighborFov * Mathf.Deg2Rad);
+
+        Vector3 force = Vector3.zero;
+        foreach(var neighbor in _neighbors)
+        {
+            force += (Pos - neighbor.Pos).normalized;
+        }
+        force /= _neighbors.Count;
+
+        _accel += force * Boidparam.SeparationWeight;
     }
 
     /// <summary>
@@ -128,9 +135,20 @@ public class Boid : MonoBehaviour
         _accel += (averageVelocity - Velocity) * Boidparam.AlignmentWeight;
     }
 
+    /// <summary>
+    /// 近隣の個体の中心方向に加速させる
+    /// </summary>
     void UpdateCohesion()
     {
-
+        if (_neighbors.Count == 0)
+            return;
+        var averagePos = Vector3.zero;
+        foreach(var neighbor in _neighbors)
+        {
+            averagePos += neighbor.Pos;
+        }
+        averagePos /= _neighbors.Count;
+        _accel += (averagePos - Pos) * Boidparam.CohesionWeight;
     }
 
     /// <summary>
@@ -139,6 +157,7 @@ public class Boid : MonoBehaviour
     void UpdateMove()
     {
         var deltatime = Time.deltaTime;
+
         Velocity += _accel * deltatime;
         var dir = Velocity.normalized;
         var speed = Velocity.magnitude;
