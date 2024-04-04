@@ -85,9 +85,9 @@ public class Boid : MonoBehaviour
             CalcAccelAgainstWall(-scale - Pos.x, Vector3.right) +
             CalcAccelAgainstWall(-scale - Pos.y, Vector3.up) +
             CalcAccelAgainstWall(-scale - Pos.z, Vector3.forward) +
-            CalcAccelAgainstWall(scale - Pos.x, Vector3.left) +
-            CalcAccelAgainstWall(scale - Pos.y, Vector3.down) +
-            CalcAccelAgainstWall(scale - Pos.z, Vector3.back);
+            CalcAccelAgainstWall(+scale - Pos.x, Vector3.left) +
+            CalcAccelAgainstWall(+scale - Pos.y, Vector3.down) +
+            CalcAccelAgainstWall(+scale - Pos.z, Vector3.back);
     }
 
     Vector3 CalcAccelAgainstWall(float distance, Vector3 dir)
@@ -105,21 +105,27 @@ public class Boid : MonoBehaviour
     /// </summary>
     void UpdateSeparation()
     {
+        _neighbors.Clear();
+        if (!Simulation)
+            return;
+        var prodThresh = Mathf.Cos(Boidparam.NeighborFov * Mathf.Deg2Rad);
+    }
+
+    /// <summary>
+    /// 近隣の個体の速度平均を求め、accelに返すメソッド
+    /// </summary>
+    void UpdateAlignment()
+    {
         if (_neighbors.Count == 0)
             return;
 
-        Vector3 force = Vector3.zero;
+        var averageVelocity = Vector3.zero;
         foreach(var neighbor in _neighbors)
         {
-            force += (Pos - neighbor.Pos).normalized;
+            averageVelocity += neighbor.Velocity;
         }
-        force /= _neighbors.Count;
-        _accel += force * Boidparam.SeparationWeight;
-    }
-
-    void UpdateAlignment()
-    {
-
+        averageVelocity /= _neighbors.Count;
+        _accel += (averageVelocity - Velocity) * Boidparam.AlignmentWeight;
     }
 
     void UpdateCohesion()
