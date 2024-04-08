@@ -46,6 +46,8 @@ public class RockonSensor : MonoBehaviour
 
     //colliderを使う場合の処理終了
 
+    //colliderを使わない処理を追加
+
     /// <summary>
     /// 現在のロックオンオブジェクトを返すメソッド
     /// </summary>
@@ -82,5 +84,14 @@ public class RockonSensor : MonoBehaviour
         {
             _nowTarget = _enemyList[0];
         }
+    }
+
+    /// <summary>
+    /// マルチロック時に索敵範囲のエネミーを返す
+    /// </summary>
+    /// <returns>索敵範囲のエネミー</returns>
+    public List<GameObject> GetEnemyList()
+    {
+        return _enemyList;
     }
 }
