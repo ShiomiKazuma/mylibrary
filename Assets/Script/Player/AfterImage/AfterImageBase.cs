@@ -3,6 +3,9 @@ using UniRx;
 using Unity.Collections;
 using UnityEngine;
 
+/// <summary>
+/// 残像用オブジェクトの基底クラス
+/// </summary>
 public abstract class AfterImageBase : MonoBehaviour
 {
     [SerializeField] protected Shader _shader = null;
