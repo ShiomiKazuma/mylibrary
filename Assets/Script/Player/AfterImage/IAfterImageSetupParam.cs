@@ -13,7 +13,7 @@ public class SimpleAfterImageParam : IAfterImageSetupParam
     public SimpleAfterImageParam() { }
     public SimpleAfterImageParam(Transform original)
     {
-        Transform = null;
+        Transform = original;
     }
     ~SimpleAfterImageParam()
     {
