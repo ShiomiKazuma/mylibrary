@@ -34,12 +34,12 @@ namespace Player.Move
 
         [Header("接地判定が反応するLayer")]
         [SerializeField, Tooltip("接地判定が反応するLayer")]
-        LayerMask groundLayers;
+        private LayerMask groundLayers;
 
         RaycastHit _slopeHit;
         private Vector3 _groundNormalVector;
         
-        float _h, _v;
+        private float _h, _v;
         // Start is called before the first frame update
         void Start()
         {
@@ -53,17 +53,88 @@ namespace Player.Move
             _v = Input.GetAxisRaw("Vertical");
         }
 
-        void FixedUpdate()
+        private void FixedUpdate()
         {
             if(_h != 0 || _v != 0)
             {
                 //移動処理をする
+                Vector2 velocity = new Vector2(_h, _v);
+                OnMove(velocity);
             }
             else
             {
                 _dir = Vector3.zero;
                 _targetRotation = this.transform.rotation;
             }
+        }
+
+        /// <summary>
+        /// プレイヤーの移動処理のメソッド
+        /// </summary>
+        /// <param name="vec">移動のインプット処理</param>
+        private void OnMove(Vector2 vec)
+        {
+            //プレイヤーの移動方向を決める
+            _dir = new Vector3(vec.x, 0, vec.y);
+            //
+            _dir = Camera.main.transform.TransformDirection(_dir);
+            _dir.y = 0;
+            _dir = _dir.normalized;
+
+            //滑らかに進行方向に回転させる
+            if(_dir.magnitude > 0)
+            {
+                _targetRotation = Quaternion.LookRotation(_dir, Vector3.up);
+            }
+
+            //回転をさせる
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, _targetRotation, _rotateSpeed);
+
+            _rb.AddForce(GetSlopeMoveDirection(_dir * _moveSpeed,NormalRay()), ForceMode.Force);
+
+            if(GroundCheck())
+            {
+                Debug.Log("接地");
+                
+            }
+        }
+
+        /// <summary>プレイヤーの接地判定を判定するメソッド </summary>
+		/// <returns>接地判定</returns>	
+		private bool GroundCheck()
+        {
+            //オフセットを計算して接地判定の球の位置を設定する
+            Vector3 spherePosition =
+                new Vector3(transform.position.x, transform.position.y - groundOffSetY, transform.position.z);
+
+            //接地判定を返す
+            return Physics.CheckSphere(spherePosition, groundRadius, groundLayers, QueryTriggerInteraction.Ignore);
+        }
+
+        /// <summary>
+        /// 法線を返すメソッド
+        /// </summary>
+        /// <returns></returns>
+        private Vector3 NormalRay()
+        {
+            RaycastHit hit;
+            Ray ray = new Ray(transform.position, Vector3.down * .3f);
+            if (Physics.Raycast(ray, out hit, 10, groundLayers))
+            {
+                Debug.Log("レイ" + hit.normal);
+                Debug.DrawRay(transform.position, Vector3.down * .3f, Color.cyan);
+                return hit.normal;
+            }
+            return Vector3.zero;
+        }
+
+        /// <summary>
+		/// 傾斜に合わせたベクトルに変えるメソッド
+		/// </summary>
+		/// <returns>傾斜に合わせたベクトル</returns>
+		Vector3 GetSlopeMoveDirection(Vector3 dir, Vector3 normalVector)
+        {
+            return Vector3.ProjectOnPlane(dir, normalVector);
         }
 
         //private void OnTriggerEnter(Collider other)
