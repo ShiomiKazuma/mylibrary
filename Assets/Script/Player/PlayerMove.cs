@@ -36,7 +36,11 @@ namespace Player.Move
         [SerializeField, Tooltip("接地判定が反応するLayer")]
         private LayerMask groundLayers;
 
-        RaycastHit _slopeHit;
+        [Header("法線を取るRayの長さ")]
+        [SerializeField, Tooltip("法線を取るRayの長さ"), Range(0, 1)]
+        private float _normalRayLength = 0.3f;
+
+        private RaycastHit _slopeHit;
         private Vector3 _groundNormalVector;
         
         private float _h, _v;
@@ -97,6 +101,11 @@ namespace Player.Move
                 Debug.Log("接地");
                 
             }
+            else
+            {
+                //地面から浮いた際に重力をかける
+                _rb.AddForce(new Vector3(0, -_gravityvalue));
+            }
         }
 
         /// <summary>プレイヤーの接地判定を判定するメソッド </summary>
@@ -118,16 +127,27 @@ namespace Player.Move
         private Vector3 NormalRay()
         {
             RaycastHit hit;
-            Ray ray = new Ray(transform.position, Vector3.down * .3f);
-            if (Physics.Raycast(ray, out hit, 10, groundLayers))
+            Ray ray = new Ray(transform.position, Vector3.down * _normalRayLength);
+            if (Physics.Raycast(ray, out hit, _normalRayLength, groundLayers))
             {
                 Debug.Log("レイ" + hit.normal);
-                Debug.DrawRay(transform.position, Vector3.down * .3f, Color.cyan);
+                Debug.DrawRay(transform.position, Vector3.down * _normalRayLength, Color.cyan);
                 return hit.normal;
             }
             return Vector3.zero;
         }
 
+        /// <summary>
+        /// プレイヤーの速度制限をするメソッド
+        /// </summary>
+        private void SpeedControl()
+        {
+            if(_rb.velocity.magnitude > _moveSpeed)
+            {
+                Debug.Log("速度制限");
+                _rb.velocity = GetSlopeMoveDirection(_dir * _moveSpeed, NormalRay());
+            }
+        }
         /// <summary>
 		/// 傾斜に合わせたベクトルに変えるメソッド
 		/// </summary>
@@ -135,6 +155,12 @@ namespace Player.Move
 		Vector3 GetSlopeMoveDirection(Vector3 dir, Vector3 normalVector)
         {
             return Vector3.ProjectOnPlane(dir, normalVector);
+        }
+
+        private void OnCollisionStay(Collision collision)
+        {
+            // 衝突した面の、接触した点における法線を取得
+            _groundNormalVector = collision.contacts[0].normal;
         }
 
         //private void OnTriggerEnter(Collider other)
