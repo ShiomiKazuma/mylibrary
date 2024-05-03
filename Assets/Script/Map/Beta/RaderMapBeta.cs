@@ -32,7 +32,7 @@ public class RaderMapBeta : MonoBehaviour
         foreach (GameObject obj in objects)
         {
             AgentScript agent = obj.GetComponent<AgentScript>();
-            agent.RaderMap = this;
+           // agent.RaderMap = this;
             agent.Image = Instantiate(_target, _center.transform.parent).GetComponent<RectTransform>();
             _enemys.Add(obj.GetComponent<AgentScript>());
         }//エネミーを取得する
