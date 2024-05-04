@@ -33,7 +33,7 @@ public class RaderMapBeta : MonoBehaviour
         {
             AgentScript agent = obj.GetComponent<AgentScript>();
            // agent.RaderMap = this;
-            agent.Image = Instantiate(_target, _center.transform.parent).GetComponent<RectTransform>();
+            //agent.Image = Instantiate(_target, _center.transform.parent).GetComponent<RectTransform>();
             _enemys.Add(obj.GetComponent<AgentScript>());
         }//エネミーを取得する
 
@@ -48,7 +48,7 @@ public class RaderMapBeta : MonoBehaviour
         {
             //Imageがなければ生成
             if (!_enemys[i].Image)
-                _enemys[i].Image = Instantiate(_target, _center.transform.parent).GetComponent<RectTransform>();
+                _enemys[i].RectTransform = Instantiate(_target, _center.transform.parent).GetComponent<RectTransform>();
 
             Vector3 enemyDir = _enemys[i].transform.position;
             //敵の高さとプレイヤーの高さを合わせる
@@ -59,7 +59,7 @@ public class RaderMapBeta : MonoBehaviour
             enemyDir = Vector3.ClampMagnitude(enemyDir, _raderLength); // ベクトルの長さを制限
 
             //赤点の位置を決める
-            _enemys[i].Image.anchoredPosition = new Vector2(enemyDir.x * _radius + _offset.x, enemyDir.z * _radius + _offset.y);
+            _enemys[i].RectTransform.anchoredPosition3D = new Vector2(enemyDir.x * _radius + _offset.x, enemyDir.z * _radius + _offset.y);
         }
 
 
