@@ -3,14 +3,18 @@ using UnityEngine.UI;
 
 public class GridArray : MonoBehaviour
 {
-    [SerializeField] int _row = 5;
-    [SerializeField] int _column = 5;
+    [SerializeField] private int _row = 5;
+    [SerializeField] private int _column = 5;
     private int _currentRow = 0;
     private int _currentColumn = 0;
     private int _preRow = 0;
     private int _preColumn = 0;
-    int[,] _grid;
-    Image[,] _gridImage;
+    private int[,] _grid;
+    private Image[,] _gridImage;
+    private int _count;
+    private bool IsRemove;
+    private bool IsEnd;
+
     private void Start()
     {
         _grid = new int[_row, _column];
@@ -32,6 +36,9 @@ public class GridArray : MonoBehaviour
 
     private void Update()
     {
+        if (IsEnd)
+            return;
+
         if (Input.GetKeyDown(KeyCode.LeftArrow)) // 左キーを押した
         {
             Check("left");
@@ -56,14 +63,28 @@ public class GridArray : MonoBehaviour
         {
             _grid[_currentColumn, _currentRow] = 1;
             _gridImage[_currentColumn, _currentRow].enabled = false;
-            Check("right");
-            CheckGrid(_currentColumn, _currentRow, "right");
+            _count++;
+            IsRemove = true;
+            if (_row * _column <= _count)
+                IsEnd = true;
         }
 
-        _gridImage[_preColumn, _preRow].color = Color.white;
-        _gridImage[_currentColumn, _currentRow].color = Color.red;
-        _preRow = _currentRow;
-        _preColumn = _currentColumn;
+        if (IsEnd)
+            return;
+
+        if (!IsRemove)
+        {
+            _gridImage[_preColumn, _preRow].color = Color.white;
+            _gridImage[_currentColumn, _currentRow].color = Color.red;
+            _preRow = _currentRow;
+            _preColumn = _currentColumn;
+        }
+        else
+        {
+            _gridImage[_preColumn, _preRow].color = Color.white;
+            IsRemove = false;
+        }
+        
     }
 
     private void CheckGrid(int column, int row, string arrow)
