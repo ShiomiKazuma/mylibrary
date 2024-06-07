@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -80,7 +81,8 @@ public class TicTacToe : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             DrawMark();
-            WinJudge();
+            IsJudge = WinJudge();
+            TurnChange();
         }
     }
 
@@ -95,13 +97,13 @@ public class TicTacToe : MonoBehaviour
             {
                 _cells[_selectedRow, _selectedColumn].sprite = _circle;
                 _cellsState[_selectedRow, _selectedColumn] = CellState.Circle;
-                _currentTurn = TurnState.Cross;
+                
             }
             else
             {
                 _cells[_selectedRow, _selectedColumn].sprite = _cross;
                 _cellsState[_selectedRow, _selectedColumn] = CellState.Cross;
-                _currentTurn = TurnState.Circle;
+                
             }
         }
     }
@@ -109,8 +111,98 @@ public class TicTacToe : MonoBehaviour
     /// <summary>
     /// 勝敗の判定をするメソッド
     /// </summary>
-    private void WinJudge()
+    private bool WinJudge()
     {
+        CellState state;
+        if (_currentTurn == TurnState.Circle)
+            state = CellState.Circle;
+        else
+            state = CellState.Cross;
         
+        //縦の判定
+        for (int i = 0; i < Size; i++)
+        {
+            for (int j = 0; j < Size; j++)
+            {
+                if (_cellsState[i, j] != state)
+                    break;
+                if (j == Size - 1)
+                {
+                    Debug.Log("Win" + state);
+                    return true;
+                }
+                    
+            }
+        }
+        
+        //横の判定
+        for (int i = 0; i < Size; i++)
+        {
+            for (int j = 0; j < Size; j++)
+            {
+                if (_cellsState[j, i] != state)
+                    break;
+                if (j == Size - 1)
+                {
+                    Debug.Log("Win" + state);
+                    return true;
+                }
+                    
+            }
+        }
+
+        //左上から右下
+        for (int i = 0; i < Size; i++)
+        {
+            if (_cellsState[i, i] != state)
+                break;
+            if (i == Size - 1)
+            {
+                Debug.Log("Win" + state);
+                return true;
+            }
+        }
+        
+        //右上から左下
+        for (int i = Size - 1; i >= 0; i--)
+        {
+            if (_cellsState[Size - 1 - i, i] != state)
+                break;
+            if (i == 0)
+            {
+                Debug.Log("Win" + state);
+                return true;
+            }
+        }
+
+        bool IsContinue = true;
+        //全てが
+        for (int i = 0; i < Size && IsContinue; i++)
+        {
+            for (int j = 0; j < Size; j++)
+            {
+                if (_cellsState[i, j] == CellState.Empty)
+                {
+                    IsContinue = false;
+                    break;
+                }
+
+                if (i == Size - 1 && j == Size - 1)
+                {
+                    Debug.Log("Draw");
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void TurnChange()
+    {
+        if (_currentTurn == TurnState.Circle)
+            _currentTurn = TurnState.Cross;
+        else
+            _currentTurn = TurnState.Circle;
     }
 }
