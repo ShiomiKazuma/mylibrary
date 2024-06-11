@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 public class RaituOut : MonoBehaviour, IPointerClickHandler
 {
+    private Image[,] _cells;
     private void Start()
     {
         for (var r = 0; r < 5; r++)
@@ -13,6 +14,7 @@ public class RaituOut : MonoBehaviour, IPointerClickHandler
                 var cell = new GameObject($"Cell({r}, {c})");
                 cell.transform.parent = transform;
                 cell.AddComponent<Image>();
+                _cells[r, c] = cell.GetComponent<Image>();
             }
         }
     }
