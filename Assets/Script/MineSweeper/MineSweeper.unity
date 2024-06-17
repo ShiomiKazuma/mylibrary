@@ -454,6 +454,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _row: 7
   _column: 12
+  _mineCount: 10
   _gridLayoutGroup: {fileID: 1464173404}
   _cellPrefab: {fileID: 8064275745594348282, guid: de11f0aa34778424cbeb75e60a554e71, type: 3}
 --- !u!114 &1464173404
