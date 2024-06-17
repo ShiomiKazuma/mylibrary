@@ -14,7 +14,6 @@ public enum CellState
     Six = 6,
     Seven = 7,
     Eight = 8,
-
     Mine = -1,
 }
 
@@ -30,7 +29,7 @@ public class Cell : MonoBehaviour
         set
         {
             _cellState = value;
-            //OnCellStateChanged();
+            OnCellStateChanged();
         }
     }
     private void OnValidate()
